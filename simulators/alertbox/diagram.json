@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": -52.9, "left": 599.8, "attrs": {} },
+    { "type": "wokwi-breadboard", "id": "bb1", "top": 150.6, "left": 175.6, "attrs": {} },
+    { "type": "wokwi-ldr", "id": "ldr", "top": 420, "left": 240, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay", "top": 317, "left": 508.8, "attrs": {} },
+    { "type": "wokwi-dc-motor", "id": "waterPump", "top": 540, "left": 800, "attrs": {} },
+    { "type": "wokwi-vcc", "id": "vcc1", "top": 365.56, "left": 700.8, "attrs": {} },
+    { "type": "wokwi-gnd", "id": "gnd1", "top": 470.4, "left": 786.6, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 428.4,
+      "left": 695.4,
+      "attrs": { "color": "green", "flip": "1", "label": "Sirene" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 464.75,
+      "left": 633.6,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "bb1:5t.c", "esp:12", "green", [ "v-140", "h90" ] ],
+    [ "bb1:5b.c", "bb1:tn.5", "black", [ "h0" ] ],
+    [ "bb1:20t.c", "esp:14", "green", [ "v-180", "h90" ] ],
+    [ "bb1:20b.c", "bb1:tn.20", "black", [ "h0" ] ],
+    [ "bb1:60t.a", "esp:33", "blue", [ "v-180", "h150" ] ],
+    [ "bb1:60b.f", "bb1:tn.60", "black", [ "h0" ] ],
+    [ "bb1:60b.g", "bb1:tp.60", "red", [ "h0" ] ],
+    [ "ldr:AO", "esp:34", "yellow", [ "v0" ] ],
+    [ "ldr:VCC", "bb1:tp.15", "red", [ "h0" ] ],
+    [ "ldr:GND", "bb1:tn.15", "black", [ "h0" ] ],
+    [ "relay:IN", "esp:26", "orange", [ "v0" ] ],
+    [ "relay:VCC", "bb1:tp.80", "red", [ "h0" ] ],
+    [ "relay:GND", "bb1:tn.80", "black", [ "h0" ] ],
+    [ "relay:NO", "waterPump:1", "green", [ "h0" ] ],
+    [ "waterPump:2", "bb1:tn.90", "black", [ "h0" ] ],
+    [ "esp:3V3", "bb1:tp.50", "red", [ "h86.1", "v66.9" ] ],
+    [ "esp:GND.1", "bb1:tn.50", "black", [ "h105.3", "v86.4" ] ],
+    [ "bb1:tn.50", "bb1:bn.50", "black", [ "v0" ] ],
+    [ "bb1:tp.49", "bb1:bp.49", "red", [ "v0" ] ],
+    [ "bb1:bp.44", "bb1:54b.j", "red", [ "v0" ] ],
+    [ "bb1:bn.46", "bb1:57b.j", "black", [ "v0" ] ],
+    [ "relay:IN", "bb1:30t.d", "green", [ "h0" ] ],
+    [ "esp:D26", "bb1:30t.c", "green", [ "h0" ] ],
+    [ "relay:COM", "vcc1:VCC", "red", [ "h58.8", "v65.8", "h28.8" ] ],
+    [ "led1:C", "gnd1:GND", "black", [ "v0" ] ],
+    [ "led1:A", "r1:2", "green", [ "v0" ] ],
+    [ "relay:NO", "r1:1", "green", [ "h1.2", "v103.8" ] ],
+    [ "relay:VCC", "bb1:bp.26", "", [ "$bb" ] ],
+    [ "relay:GND", "bb1:bn.26", "", [ "$bb" ] ]
+  ],
+  "serialMonitor": { "display": "always", "newline": "lf", "convertEol": false },
+  "dependencies": {}
+}

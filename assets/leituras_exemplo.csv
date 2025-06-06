@@ -1,0 +1,5 @@
+timestamp,codigo_patrimonio,tipo_metrica,medida
+2023-10-01T12:00:00,CAIXA001,Umidade,75.5
+2023-10-01T12:05:00,CAIXA002,Umidade,76.0
+2023-10-01T12:10:00,CAIXA001,Temperatura,22.5
+2023-10-01T12:15:00,CAIXA002,Temperatura,23.0

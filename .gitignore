@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+.venv
+
+
+/simuladores/**/.pio
+/simuladores/**/.vscode/.browse.c_cpp.db*
+/simuladores/**/.vscode/c_cpp_properties.json
+/simuladores/**/.vscode/launch.json
+/simuladores/**/.vscode/ipch

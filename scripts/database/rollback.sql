@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS leituras;
+DROP TABLE IF EXISTS versao_metricas;
+DROP TABLE IF EXISTS tipo_metricas;
+DROP TABLE IF EXISTS caixas;
+DROP TABLE IF EXISTS versoes_caixa;
+DROP TABLE IF EXISTS morros;
