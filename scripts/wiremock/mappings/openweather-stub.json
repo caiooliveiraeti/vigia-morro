@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/data/3.0/onecall.*"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "responses/openweather-response.json",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "transformers": ["response-template"]
+  }
+}

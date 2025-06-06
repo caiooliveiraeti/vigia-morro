@@ -1,10 +1,14 @@
 from .core.services.caixa_service import CaixaService
 from .core.services.morro_service import MorroService
 from .core.services.alert_service import AlertService  # Importando o AlertService
+from .core.services.weather_service import WeatherService  # Importando o WeatherService
+from .core.services.predict_service import PredictService  # Importando o PredictService
 import questionary
 
 morro_service = MorroService()
 caixa_service = CaixaService()
+weather_service = WeatherService()
+predict_service = PredictService()
 
 def executar():
     while True:
@@ -22,6 +26,8 @@ def executar():
                 "9. Exportar Leituras de um Morro",
                 "11. Conectar SensorBox (Serial)",
                 "12. Conectar AlertBox (Serial)",
+                "14. Iniciar Crawler de Meteorologia",
+                "15. Previsão de Deslizamento",
                 "99. Sair"
             ]
         ).ask()
@@ -123,6 +129,29 @@ def executar():
                     alert_service.monitorar_alertas(serial_url, morro_id)
                 except Exception as e:
                     print(f"⚠️ Erro ao monitorar AlertBox: {e}")
+
+            elif escolha.startswith("14."):
+                try:
+                    weather_service.iniciar_crawler()
+                except Exception as e:
+                    print(f"⚠️ Erro ao iniciar o crawler de meteorologia: {e}")
+
+            elif escolha.startswith("15."):
+                acao = questionary.select(
+                    "Escolha uma ação:",
+                    choices=["Treinar Modelo", "Previsão Contínua de Deslizamento"]
+                ).ask()
+
+                if acao == "Treinar Modelo":
+                    try:
+                        predict_service.treinar()
+                    except Exception as e:
+                        print(f"⚠️ Erro ao treinar o modelo: {e}")
+                elif acao == "Previsão Contínua de Deslizamento":
+                    try:
+                        predict_service.prever()
+                    except Exception as e:
+                        print(f"⚠️ Erro durante a previsão contínua: {e}")
 
             elif escolha.startswith("99."):
                 print("👋 Encerrando...")

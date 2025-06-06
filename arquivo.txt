@@ -1,2 +1,0 @@
-id_morro,nome_morro,id_caixa,nome_caixa,tipo_metrica,valor,timestamp
-550e8400-e29b-41d4-a716-446655440000,Morro da Serra,550e8400-e29b-41d4-a716-446655440003,CAIXA001,Temperatura,10.0,2025-06-06 17:42:58

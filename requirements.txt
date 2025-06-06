@@ -1,3 +1,6 @@
 oracledb
 questionary
 pyserial
+requests
+sklearn
+pandas

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   oracle-db:
     image: container-registry.oracle.com/database/free:latest-lite
@@ -6,3 +8,13 @@ services:
       - "1521:1521"
     environment:
       - ORACLE_PWD=MyLocalPassword123
+  wiremock:
+    image: wiremock/wiremock:3.13.0
+    container_name: wiremock
+    ports:
+      - "8080:8080"
+    environment:
+      - WIREMOCK_PORT=8080
+    volumes:
+      - ./scripts/wiremock:/home/wiremock
+    command: ["--verbose", "--global-response-templating", "--print-all-network-traffic"]

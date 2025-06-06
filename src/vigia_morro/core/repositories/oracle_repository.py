@@ -209,3 +209,53 @@ class OracleRepository:
         ]
         cursor.close()
         return alertas
+
+    def salvar_dados_meteorologicos(self, morro_id, temperatura, umidade, descricao, chovendo):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT INTO meteorologia (morro_id, temperatura, umidade, descricao, chovendo)
+            VALUES (:1, :2, :3, :4, :5)
+        """, (morro_id, temperatura, umidade, descricao, chovendo))
+        self.conn.commit()
+        cursor.close()
+
+    def listar_caixas_alerta_por_morro(self, morro_id):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT caixa_id
+            FROM caixas
+            WHERE morro_id = :1 AND tipo = 'alerta'
+        """, [morro_id])
+        caixas = [{"caixa_id": row[0]} for row in cursor.fetchall()]
+        cursor.close()
+        return caixas
+
+    def alerta_ativo_para_caixa(self, caixa_id):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM alerta
+            WHERE caixa_id = :1 AND data_final IS NULL
+        """, [caixa_id])
+        result = cursor.fetchone()[0]
+        cursor.close()
+        return result > 0
+
+    def registrar_alerta(self, morro_id, caixa_id):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT INTO alerta (morro_id, caixa_id, status, data_inicio)
+            VALUES (:1, :2, 'Ativo', CURRENT_TIMESTAMP)
+        """, [morro_id, caixa_id])
+        self.conn.commit()
+        cursor.close()
+
+    def desligar_alerta(self, alerta_id):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            UPDATE alerta
+            SET data_final = CURRENT_TIMESTAMP, status = 'Inativo'
+            WHERE alerta_id = :1
+        """, [alerta_id])
+        self.conn.commit()
+        cursor.close()

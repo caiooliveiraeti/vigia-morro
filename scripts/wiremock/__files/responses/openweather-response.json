@@ -1,0 +1,15 @@
+{
+
+  "current":{
+     "temp": "{{randomInt lower=15 upper=35}}",
+     "humidity": "{{randomInt lower=40 upper=90}}",
+     "weather":[
+        {
+           "description": "{{pickRandom 'ceu limpo' 'chuva moderada' 'chuva forte'}}"
+        }
+     ],
+     "rain": "{{randomInt lower=0 upper=2}}"
+  }
+}
+
+               
