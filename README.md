@@ -38,12 +38,17 @@ Com esses dados, equipes de Defesa Civil podem tomar decisões rápidas e inform
 - **Registro de Leituras**: Cadastrar medições para caixas.
 - **Importação de Leituras**: Importar medições de caixas a partir de arquivos CSV.
 - **Exportação de Leituras**: Exportar todas as medições de um morro para arquivos CSV ou JSON.
+- **Crawler de Meteorologia**: Consulta dados meteorológicos em tempo real e os armazena no banco de dados.
+- **Previsão de Deslizamentos**: Utiliza aprendizado de máquina para prever riscos de deslizamentos com base em dados históricos.
 
 ## Simulador de Caixas
 
-O projeto inclui um simulador de caixas desenvolvido no Wokwi para testar a integração com o sistema. O simulador utiliza um ESP32 para simular sensores de umidade, temperatura e alertas.
+O projeto inclui simuladores de caixas desenvolvidos no Wokwi para testar a integração com o sistema. Os simuladores utilizam ESP32 para simular sensores de umidade, temperatura e alertas.
 
-Para mais detalhes, consulte o [README do simulador](simulators/alertbox/README.md).
+- **SensorBox**: Simula sensores de umidade e temperatura do solo.
+- **AlertBox**: Simula o acionamento de alertas sonoros.
+
+Para mais detalhes, consulte os [READMEs dos simuladores](simulators/sensorbox/README.md) e [AlertBox](simulators/alertbox/README.md).
 
 ## Exemplos de Uso Prático
 
@@ -58,6 +63,9 @@ Para mais detalhes, consulte o [README do simulador](simulators/alertbox/README.
 
 3. **Planejamento Preventivo**:
    - Dados históricos de sensores ajudam a identificar padrões e planejar ações preventivas, como reforço de encostas e drenagem.
+
+4. **Previsão de Deslizamentos**:
+   - O sistema utiliza um modelo de aprendizado de máquina para prever riscos de deslizamentos com base em variáveis como umidade do solo, temperatura e condições meteorológicas.
 
 ## Requisitos para executar o código
 
@@ -89,7 +97,7 @@ Siga as instruções no terminal para realizar as operações desejadas.
 
 ## Estrutura do Projeto
 
-- **`src/vigia_morro/core/services`**: Contém a lógica de negócios para morros e caixas.
+- **`src/vigia_morro/core/services`**: Contém a lógica de negócios para morros, caixas, meteorologia e previsão.
 - **`src/vigia_morro/core/repositories`**: Implementa a comunicação com o banco de dados Oracle.
 - **`src/vigia_morro/cli.py`**: Implementa a interface de linha de comando.
 - **`scripts/database/*`**: Scripts para criar e popular as tabelas no banco de dados.
@@ -108,4 +116,6 @@ erDiagram
     TIPO_METRICAS ||--o{ LEITURAS : mede
     VERSOES_CAIXA ||--o{ VERSAO_METRICAS : associa
     TIPO_METRICAS ||--o{ VERSAO_METRICAS : pertence
+    MORROS ||--o{ METEOROLOGIA : possui
+    MORROS ||--o{ ALERTA : possui
 ```
