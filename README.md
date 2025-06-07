@@ -48,7 +48,7 @@ O projeto inclui simuladores de caixas desenvolvidos no Wokwi para testar a inte
 - **SensorBox**: Simula sensores de umidade e temperatura do solo.
 - **AlertBox**: Simula o acionamento de alertas sonoros.
 
-Para mais detalhes, consulte os [READMEs dos simuladores](simulators/sensorbox/README.md) e [AlertBox](simulators/alertbox/README.md).
+Para mais detalhes, consulte os READMEs dos simuladores [SensorBox](simulators/sensorbox/README.md) e [AlertBox](simulators/alertbox/README.md).
 
 ## Exemplos de Uso Prático
 
