@@ -259,3 +259,151 @@ class OracleRepository:
         """, [alerta_id])
         self.conn.commit()
         cursor.close()
+
+    def obter_leituras_solo_para_treino(self, resolucao_minutos=10):
+        """
+        Retorna a umidade do solo média, máxima e mínima agrupada pelo tipo de métrica
+        para um determinado morro, com resolução configurável em minutos.
+        Inclui um campo de datetime formatado com a resolução.
+        """
+        query = f"""
+        SELECT
+            TRUNC(l.timestamp, 'MI') + FLOOR(EXTRACT(MINUTE FROM l.timestamp) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE AS intervalo_tempo,
+            TO_CHAR(TRUNC(l.timestamp, 'MI') + FLOOR(EXTRACT(MINUTE FROM l.timestamp) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE, 'YYYY-MM-DD HH24:MI:SS') AS datetime_formatado,
+            tm.nome AS tipo_metrica,
+            AVG(l.valor) AS metrica_media,
+            MAX(l.valor) AS metrica_maxima,
+            MIN(l.valor) AS metrica_minima,
+            c.morro_id
+        FROM leituras l
+        JOIN caixas c ON l.caixa_id = c.caixa_id
+        JOIN tipo_metricas tm ON l.tipo_metrica_id = tm.tipo_metrica_id
+        GROUP BY TRUNC(l.timestamp, 'MI') + FLOOR(EXTRACT(MINUTE FROM l.timestamp) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE, tm.nome, c.morro_id
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        results = cursor.fetchall()
+        cursor.close()
+
+        return [
+            {
+                "intervalo_tempo": row[0],  # Objeto de intervalo de tempo
+                "datetime_formatado": row[1],  # Campo formatado como string
+                "tipo_metrica": row[2].lower(),
+                "media": row[3],
+                "maxima": row[4],
+                "minima": row[5],
+                "morro_id": row[6]
+            }
+            for row in results
+        ]
+
+    def obter_meteorologia_para_treino(self, resolucao_minutos=10):
+        """
+        Retorna os dados de meteorologia (temperatura, umidade e estado de chuva) agrupados
+        por intervalos configuráveis em minutos para um determinado morro.
+        Inclui um campo de datetime formatado com a resolução.
+        """
+        query = f"""
+        SELECT
+            TRUNC(m.data_hora, 'MI') + FLOOR(EXTRACT(MINUTE FROM m.data_hora) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE AS intervalo_tempo,
+            TO_CHAR(TRUNC(m.data_hora, 'MI') + FLOOR(EXTRACT(MINUTE FROM m.data_hora) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE, 'YYYY-MM-DD HH24:MI:SS') AS datetime_formatado,
+            AVG(m.temperatura) AS temperatura_media,
+            AVG(m.umidade) AS umidade_media,
+            MAX(m.chovendo) AS chovendo, -- Se chover em qualquer ponto do intervalo, considera como chovendo
+            m.morro_id
+        FROM meteorologia m
+        GROUP BY TRUNC(m.data_hora, 'MI') + FLOOR(EXTRACT(MINUTE FROM m.data_hora) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE, m.morro_id
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        results = cursor.fetchall()
+        cursor.close()
+
+        return [
+            {
+                "intervalo_tempo": row[0],  # Objeto de intervalo de tempo
+                "datetime_formatado": row[1],  # Campo formatado como string
+                "temperatura_media": row[2],
+                "umidade_media": row[3],
+                "chovendo": bool(row[4]),   # Converte para booleano (1 = True, 0 = False)
+                "morro_id": row[5]
+            }
+            for row in results
+        ]
+
+    def obter_leituras_solo_por_morro(self, morro_id, resolucao_minutos=10):
+        """
+        Retorna a umidade do solo média, máxima e mínima agrupada pelo tipo de métrica
+        para um determinado morro, com resolução configurável em minutos.
+        Inclui um campo de datetime formatado com a resolução e limitado aos últimos 3 dias.
+        """
+        query = f"""
+        SELECT
+            TRUNC(l.timestamp, 'MI') + FLOOR(EXTRACT(MINUTE FROM l.timestamp) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE AS intervalo_tempo,
+            TO_CHAR(TRUNC(l.timestamp, 'MI') + FLOOR(EXTRACT(MINUTE FROM l.timestamp) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE, 'YYYY-MM-DD HH24:MI:SS') AS datetime_formatado,
+            tm.nome AS tipo_metrica,
+            AVG(l.valor) AS metrica_media,
+            MAX(l.valor) AS metrica_maxima,
+            MIN(l.valor) AS metrica_minima,
+            c.morro_id
+        FROM leituras l
+        JOIN caixas c ON l.caixa_id = c.caixa_id
+        JOIN tipo_metricas tm ON l.tipo_metrica_id = tm.tipo_metrica_id
+        WHERE c.morro_id = :morro_id
+          AND l.timestamp >= SYSDATE - INTERVAL '3' MINUTE
+        GROUP BY TRUNC(l.timestamp, 'MI') + FLOOR(EXTRACT(MINUTE FROM l.timestamp) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE, tm.nome, c.morro_id
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(query, {"morro_id": morro_id})
+        results = cursor.fetchall()
+        cursor.close()
+
+        return [
+            {
+                "intervalo_tempo": row[0],  # Objeto de intervalo de tempo
+                "datetime_formatado": row[1],  # Campo formatado como string
+                "tipo_metrica": row[2].lower(),
+                "media": row[3],
+                "maxima": row[4],
+                "minima": row[5],
+                "morro_id": row[6]
+            }
+            for row in results
+        ]
+
+    def obter_meteorologia_por_morro(self, morro_id, resolucao_minutos=10):
+        """
+        Retorna os dados de meteorologia (temperatura, umidade e estado de chuva) agrupados
+        por intervalos configuráveis em minutos para um determinado morro.
+        Inclui um campo de datetime formatado com a resolução e limitado aos últimos 3 dias.
+        """
+        query = f"""
+        SELECT
+            TRUNC(m.data_hora, 'MI') + FLOOR(EXTRACT(MINUTE FROM m.data_hora) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE AS intervalo_tempo,
+            TO_CHAR(TRUNC(m.data_hora, 'MI') + FLOOR(EXTRACT(MINUTE FROM m.data_hora) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE, 'YYYY-MM-DD HH24:MI:SS') AS datetime_formatado,
+            AVG(m.temperatura) AS temperatura_media,
+            AVG(m.umidade) AS umidade_media,
+            MAX(m.chovendo) AS chovendo, -- Se chover em qualquer ponto do intervalo, considera como chovendo
+            m.morro_id
+        FROM meteorologia m
+        WHERE m.morro_id = :morro_id
+          AND m.data_hora >= SYSDATE - INTERVAL '3' MINUTE
+        GROUP BY TRUNC(m.data_hora, 'MI') + FLOOR(EXTRACT(MINUTE FROM m.data_hora) / {resolucao_minutos}) * INTERVAL '{resolucao_minutos}' MINUTE, m.morro_id
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(query, {"morro_id": morro_id})
+        results = cursor.fetchall()
+        cursor.close()
+
+        return [
+            {
+                "intervalo_tempo": row[0],  # Objeto de intervalo de tempo
+                "datetime_formatado": row[1],  # Campo formatado como string
+                "temperatura_media": row[2],
+                "umidade_media": row[3],
+                "chovendo": bool(row[4]),   # Converte para booleano (1 = True, 0 = False)
+                "morro_id": row[5]
+            }
+            for row in results
+        ]

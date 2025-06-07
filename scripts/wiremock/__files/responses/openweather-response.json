@@ -8,7 +8,7 @@
            "description": "{{pickRandom 'ceu limpo' 'chuva moderada' 'chuva forte'}}"
         }
      ],
-     "rain": "{{randomInt lower=0 upper=2}}"
+     "rain": "{{pickRandom '0' '0' '0' '0' '0' '0' '0' '0' '0' '1'}}"
   }
 }
 
